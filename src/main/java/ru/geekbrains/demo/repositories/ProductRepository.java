@@ -18,5 +18,7 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
     List<Product> findByCostLessThanEqual(float cost);
 
     List<Product> findByTitleLike(String title);
+
+    List<Product> findAllByCostBetween(float costMin, float costMax);
     }
 

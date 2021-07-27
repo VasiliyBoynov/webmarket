@@ -4,32 +4,41 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.geekbrains.demo.entities.Product;
 import ru.geekbrains.demo.services.ProductService;
-
+import ru.geekbrains.demo.repositories.ProductRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/product")
+@RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
-    // GET http://localhost:8189/product
+
+    // GET http://localhost:8189/app/products
+
     @GetMapping
-    public List<Product> getAllStudents() {
-        return productService.findAll();
+    public List<Product> findAllProducts(
+            @RequestParam(name = "min_price", defaultValue = "0") Float minPrice,
+            @RequestParam(name = "max_price", required = false) Float maxPrice
+    ) {
+        if (maxPrice == null) {
+            maxPrice = Float.MAX_VALUE;
+        }
+        return productService.findAllByPrice(minPrice, maxPrice);
     }
 
     @GetMapping("/{id}")
-    public Product getStudentById(@PathVariable Long id) {
+    public Product getProductById(@PathVariable Long id) {
         return productService.findById(id);
     }
-
     @PostMapping
-    public Product save(@RequestBody Product student) {
-        return productService.save(student);
+    public Product save(@RequestBody Product product) {
+        product.setId(null);
+        return productService.save(product);
     }
-    // GET http://localhost:8189/product/delete/
-    @GetMapping("/delete/{id}")
+
+    @DeleteMapping("/{id}")
     public List<Product>  deleteById(@PathVariable Long id) {
         return  productService.deleteById(id);
     }
