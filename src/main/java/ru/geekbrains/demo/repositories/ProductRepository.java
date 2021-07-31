@@ -3,7 +3,8 @@ package ru.geekbrains.demo.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ru.geekbrains.demo.entities.Product;
+import ru.geekbrains.demo.model.dtos.ProductDto;
+import ru.geekbrains.demo.model.entities.Product;
 
 import java.util.List;
 
@@ -19,6 +20,6 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
 
     List<Product> findByTitleLike(String title);
 
-    List<Product> findAllByCostBetween(float costMin, float costMax);
+    List<ProductDto> findAllByCostBetween(float costMin, float costMax);
     }
 

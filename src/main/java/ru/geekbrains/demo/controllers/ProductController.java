@@ -2,12 +2,12 @@ package ru.geekbrains.demo.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.geekbrains.demo.entities.Product;
+import ru.geekbrains.demo.exceptions.ResourceNotFoundException;
+import ru.geekbrains.demo.model.dtos.ProductDto;
+import ru.geekbrains.demo.model.entities.Product;
 import ru.geekbrains.demo.services.ProductService;
-import ru.geekbrains.demo.repositories.ProductRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/products")
@@ -18,7 +18,7 @@ public class ProductController {
     // GET http://localhost:8189/app/products
 
     @GetMapping
-    public List<Product> findAllProducts(
+    public List<ProductDto> findAllProducts(
             @RequestParam(name = "min_price", defaultValue = "0") Float minPrice,
             @RequestParam(name = "max_price", required = false) Float maxPrice
     ) {
@@ -29,9 +29,10 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public Product getProductById(@PathVariable Long id) {
-        return productService.findById(id);
+    public ProductDto getProductById(@PathVariable Long id) {
+        return productService.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product with id: " + id + " doesn't exist"));
     }
+
     @PostMapping
     public Product save(@RequestBody Product product) {
         product.setId(null);

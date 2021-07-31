@@ -3,10 +3,14 @@ package ru.geekbrains.demo.services;
 
 import lombok.*;
 import org.springframework.stereotype.Service;
-import ru.geekbrains.demo.entities.Product;
+import ru.geekbrains.demo.exceptions.ResourceNotFoundException;
+import ru.geekbrains.demo.model.dtos.ProductDto;
+import ru.geekbrains.demo.model.entities.Product;
 import ru.geekbrains.demo.repositories.ProductRepository;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 @Service
 @Setter
@@ -16,11 +20,11 @@ public class ProductService {
     private final ProductRepository productRepository;
 
 
-    public Product findById(Long id){
-        return productRepository.findById(id).orElse(new Product());
+    public Optional<ProductDto> findById(Long id) {
+        return productRepository.findById(id).map(p -> new ProductDto(p));
     }
 
-    public List<Product> findAllByPrice(Float min, Float max) {
+    public List<ProductDto> findAllByPrice(Float min, Float max) {
         return productRepository.findAllByCostBetween(min, max);
     }
 
