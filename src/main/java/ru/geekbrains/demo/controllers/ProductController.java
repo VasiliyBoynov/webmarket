@@ -1,10 +1,13 @@
 package ru.geekbrains.demo.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import ru.geekbrains.demo.exceptions.ResourceNotFoundException;
 import ru.geekbrains.demo.model.dtos.ProductDto;
 import ru.geekbrains.demo.model.entities.Product;
+import ru.geekbrains.demo.repositories.specifications.ProductSpecifications;
 import ru.geekbrains.demo.services.ProductService;
 
 import java.util.List;
@@ -18,14 +21,16 @@ public class ProductController {
     // GET http://localhost:8189/app/products
 
     @GetMapping
-    public List<ProductDto> findAllProducts(
-            @RequestParam(name = "min_price", defaultValue = "0") Float minPrice,
-            @RequestParam(name = "max_price", required = false) Float maxPrice
+    public Page<ProductDto> findAllProducts(
+            @RequestParam MultiValueMap<String, String> params,
+            @RequestParam(name = "p", defaultValue = "1") Integer pag,
+            @RequestParam(name = "productsToPage", defaultValue = "10") Integer productsToPage
     ) {
-        if (maxPrice == null) {
-            maxPrice = Float.MAX_VALUE;
+        if (pag < 1) {
+            pag=1;
         }
-        return productService.findAllByPrice(minPrice, maxPrice);
+        if (productsToPage<0) {productsToPage=10;}
+        return productService.findAll(ProductSpecifications.build(params), pag, productsToPage);
     }
 
     @GetMapping("/{id}")
@@ -44,10 +49,7 @@ public class ProductController {
         return  productService.deleteById(id);
     }
 
-    @GetMapping("/find/{str}")
-    public List<Product>  deleteById(@PathVariable String str) {
-        return  productService.findByTitleLike(str);
-    }
+
 
 
 

@@ -2,6 +2,9 @@ package ru.geekbrains.demo.services;
 
 
 import lombok.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import ru.geekbrains.demo.exceptions.ResourceNotFoundException;
 import ru.geekbrains.demo.model.dtos.ProductDto;
@@ -19,13 +22,12 @@ import java.util.function.Function;
 public class ProductService {
     private final ProductRepository productRepository;
 
+    public Page<ProductDto> findAll(Specification<Product> spec, int page, int pageSize) {
+        return productRepository.findAll(spec, PageRequest.of(page - 1, pageSize)).map(p -> new ProductDto(p));
+    }
 
     public Optional<ProductDto> findById(Long id) {
         return productRepository.findById(id).map(p -> new ProductDto(p));
-    }
-
-    public List<ProductDto> findAllByPrice(Float min, Float max) {
-        return productRepository.findAllByCostBetween(min, max);
     }
 
     public Product save(Product product){
@@ -37,10 +39,7 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public List<Product> findByTitleLike(String str){
-        String strTmp = str + "%";
-        return productRepository.findByTitleLike(strTmp);
-    }
+
 
 
 
